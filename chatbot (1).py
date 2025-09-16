@@ -1,43 +1,45 @@
 import streamlit as st
-#from streamlit_chat import message
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import ConversationChain
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain.memory import ConversationBufferWindowMemory
 
-
-# Initialize session state variables
+# Initialize session state
 if 'buffer_memory' not in st.session_state:
     st.session_state.buffer_memory = ConversationBufferWindowMemory(k=3, return_messages=True)
 
-if "messages" not in st.session_state.keys(): # Initialize the chat message history
-    st.session_state.messages = [
-        {"role": "assistant", "content": "How can I help you today?"}
-    ]
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content": "How can I help you today?"}]
 
-# Initialize ChatOpenAI and ConversationChain
-# llm = ChatOpenAI(model_name="gpt-4o-mini")
-# llm = ChatGoogleGenerativeAI(model = "gemini-pro")
-
-gemini_model=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest",  google_api_key=st.secrets["GOOGLE_API_KEY"])
+# Initialize model & chain
+gemini_model = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash-latest",
+    google_api_key=st.secrets["GOOGLE_API_KEY"]
+)
 conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=gemini_model)
 
-# Create user interface
+# UI
 st.title("🗣️ Conversational Chatbot")
 st.subheader("㈻ Simple Chat Interface for LLMs by Build Fast with AI")
 
-
-if prompt := st.chat_input("Your question"): # Prompt for user input and save to chat history
+# Chat input
+if prompt := st.chat_input("Your question"):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state["last_prompt"] = prompt
 
-for message in st.session_state.messages: # Display the prior chat messages
+# Display history
+for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-# If last message is not from assistant, generate a new response
+# Generate assistant response
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = conversation.predict(input = prompt)
+            response = conversation.predict(input=st.session_state["last_prompt"])
             st.write(response)
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message) # Add response to message history
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+# Reset option
+if st.button("Clear Chat"):
+    st.session_state.messages = [{"role": "assistant", "content": "How can I help you today?"}]
+    st.session_state.buffer_memory.clear()
