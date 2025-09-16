@@ -1,14 +1,9 @@
 import streamlit as st
 #from streamlit_chat import message
-# from langchain.chat_models import ChatOpenAI
-#from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
-import os
-
-os.environ['GOOGLE_API_KEY']="AIzaSyCIREpJvXM7CPd3SSq-9A4iKXzQd8nGSh4"
 
 # Initialize session state variables
 if 'buffer_memory' not in st.session_state:
@@ -23,7 +18,7 @@ if "messages" not in st.session_state.keys(): # Initialize the chat message hist
 # llm = ChatOpenAI(model_name="gpt-4o-mini")
 # llm = ChatGoogleGenerativeAI(model = "gemini-pro")
 
-gemini_model=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
+gemini_model=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest",  google_api_key=st.secrets["GOOGLE_API_KEY"])
 conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=gemini_model)
 
 # Create user interface
