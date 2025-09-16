@@ -24,7 +24,7 @@ if "messages" not in st.session_state.keys(): # Initialize the chat message hist
 # llm = ChatGoogleGenerativeAI(model = "gemini-pro")
 
 gemini_model=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
-conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=llm)
+conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=gemini_model)
 
 # Create user interface
 st.title("🗣️ Conversational Chatbot")
