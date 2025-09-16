@@ -7,8 +7,7 @@ from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
 import os
-
-# os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+os.environ['GOOGLE_API_KEY']="AIzaSyB283UvDtA-pxbnq9hl5EXDHX9rxJ8J10k"
 
 # Initialize session state variables
 if 'buffer_memory' not in st.session_state:
@@ -20,15 +19,11 @@ if "messages" not in st.session_state.keys(): # Initialize the chat message hist
     ]
 
 # Initialize ChatOpenAI and ConversationChain
-# llm = ChatOpenAI(model_name="gpt-4o-mini")
-# llm = ChatGoogleGenerativeAI(model = "gemini-pro")
-llm = ChatOpenAI(model = "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
-                      openai_api_key = st.secrets["TOGETHER_API_KEY"] , ## use your key
-                      openai_api_base = "https://api.together.xyz/v1"
+gemini_model=ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
 
 )
 
-conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=llm)
+conversation = ConversationChain(memory=st.session_state.buffer_memory, llm=gemini_model)
 
 # Create user interface
 st.title("🗣️ Conversational Chatbot")
